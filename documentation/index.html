@@ -1,0 +1,539 @@
+<!doctype HTML>
+
+<html>
+    <head>
+        <title>PlayFabGML</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta charset="UTF-8">
+        <!-- Bootstrap -->
+        <script src="jquery.js"></script>
+        <script src="bootstrap.bundle.min.js"></script>
+        <link rel="stylesheet" href="bootstrap.min.css">
+        <link rel="stylesheet" href="tyylit.css">
+        <script src="syntax_highlight.js"></script>
+
+        <script>
+
+
+            $(document).ready(function() {
+                $("a").attr({
+                    target: "_blank"
+                });
+
+                var highlight = window.csHighlight;
+                var rules = {
+                    patterns: [
+                        {
+                            name: "string",
+                            match: /^(\"[^\'\n]*\")/
+                        },
+                        {
+                            name: "func",
+                            match: [/^(\w+)\(/, '', '(<wbr>']
+                        },
+                        {
+                            name: "param",
+                            match: /^(argument\d)/
+                        },
+                        {
+                            name: "var",
+                            match: /^(var)/
+                        },
+                        {
+                            name: "bool",
+                            match: /^(true|false)/
+                        },
+                        {
+                            name: "token",
+                            match: [/^(if|and)\s/,'',' ']
+                        },
+                        {
+                            name: "exit",
+                            match: [/^(exit);/,'',';']
+                        },
+                        {
+                            name: "arg",
+                            match: /^[(]?(\w+)/
+                        },
+                        {  name: "arg", match: [/^,?(\w+)/,","]  },
+                        {
+                            name: "argtype",
+                            match: [/^(\[[\w\|]+\])/, "", "<wbr>"]
+                        },
+                        {
+                            name: "comment",
+                            match: /^(\/\/.+)/
+                        },
+                        {
+                            name: "comment",
+                            match: /^(\/\*.+)/
+                        }
+                    ]
+                };
+                rules.selector = ".panel_default";
+                highlight(rules);
+            });
+        </script>
+
+        <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+    </head>
+
+    <body>
+        <div class="container">
+            <div class="jumbotron jumbotron-fluid text-center">
+                <h1>PlayFab<wbr>GML</h1>
+            </div>
+
+            <div class="row">
+                <div class="col-sm-12">
+                    <p>
+                        PlayFabGML is an unofficial Playfab API for GameMaker: Studio 2 written in native GML so it should work on all platforms.
+                        <br><br>
+                        I started developing PlayFabGML when I tried to implement cross-platform Cloud Saving and Leaderboards for my mobile game. Unfortunately I didn't find any cross platform cloud backend implementations for GameMaker with server side authentication.
+                        <br><br>
+                        I googled around and found <a href="https://playfab.com/">PlayFab</a>, a Cloud Backend which has a broad range of free features:
+                    </p>
+                </div>
+            </div>
+
+            <br>
+            <div class="row">
+                <div class="col-sm-6" text-left>
+                    <h2>Server Side Authentication:</h3>
+                    <ul>
+                        <li>DeviceID for quest/shadow login</li>
+                        <li>Google account</li>
+                        <li>Facebook account</li>
+                        <li>GameCenter account</li>
+                        <li>Steam account</li>
+                        <li>Email</li>
+                    </ul>
+
+                </div>
+                <div class="col-sm-6 text-left">
+                    <h2>Cloud Saving:</h2>
+                    <ul>
+                        <li>Data sharing between multiple devices and games</li>
+                        <li>Share data with other players and groups</li>
+                        <li>Modify user data on server side with CloudScript.</li>
+                        <li>Choose data read/write access policies</li>
+                    </ul>
+                </div>
+            </div>
+
+            <br>
+            <div class = "row">
+
+                <div class="col-sm-6">
+                    <h2>Leaderboards and tournaments:</h2>
+                    <ul>
+                        <li>Global and Friend leaderboards</li>
+                        <li>Reset leaderboard on set intervals</li>
+                        <li>Delete cheated scores and ban cheaters</li>
+                        <li>Gift prices to top players</li>
+                    </ul>
+                </div>
+
+                <div class="col-sm-6">
+                    <h2>Commerce:</h2>
+                    <ul>
+                        <li>Load Item Catalog from backend</li>
+                        <li>Modify item names, prices and descriptions from backend.</li>
+                        <li>AB test store prices</li>
+                        <li>Receipt validation for Google Play, AppStore, Amazon etc.</li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <div class="row">
+                <div class="col-sm-12 no-gutters">
+                    <h3>Gettin Started:</h3>
+                    <ul start="1">
+                        <li>Import the PlayfabGML extension.</li>
+                        <li>Make sure you have "grp_playfab" groups in "Objects", "Scripts" and "Fonts" categories in resource tree.</li>
+                        <li>Select / create a solid object you want to initialize Playfab with, I call it "obj_networking". Drag it to a room.</li>
+                        <li>
+                            To Create-event:<br>
+                            <p class="panel_default">pf_init(TitleId);</p>
+                        </li>
+                    </ul>
+
+                    <ul>
+                        <li>
+                            TitleId is a four letter identifier string for your game which can be got by
+                            <a href="https://developer.playfab.com/en-us/sign-up">registering a free PlayFab account</a>
+                            and going to settings <a href="https://developer.playfab.com/en-us/login">in the game manager</a>.
+                        </li>
+                        <li>
+                            pf_init() creates a persistent "obj_playfab" object and it should be called only once at the start of the game.
+                        </li>
+                    </ul>
+
+
+
+                    <h2>Creating obj_playfab_terminal:</h2>
+                    <ul>
+                        <li>"obj_playfab_terminal" is solely a tool for debugging and observing the data moving between the game client and PlayFab backend and should be disabled in a published game.
+                        </li>
+
+                        <li>Add another line to the Create-event:<br>
+                            <p class="panel_default">instance_create_depth(0,0,0, obj_playfab_terminal);</p></li>
+                    </ul>
+
+                    <ul>
+                        <li>Now open the game and open the terminal in the game by pressing "Ctrl+Shift+S":<br>
+                            <img src="images/terminal.png">
+                            <ul>
+                                <li>pf_initialized: whether or not we have initialized Playfab API with pf_init();</li>
+
+                                <li>Processing: whether or not we are currently processing API requests</li>
+                                <li>Service Queue Size: How many API requests we have in queue</li>
+                                <li>Title ID: our game identifier set with pf_init();</li>
+                                <li>Authenticated: whether or not we have authenticated (more about that later)</li>
+                                <li>Player ID: An ID we get after we have authenticated</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+
+                    <h2>First request:</h2>
+                    <ul>
+                        <li>
+                            There are <a href="https://api.playfab.com/documentation/client#Authentication">many ways to log in / authenticate players</a>.
+                            In this example we are going to use the simplest of them all:
+                            <a href="https://api.playfab.com/documentation/client/method/LoginWithCustomID">LoginWithCustomID</a>
+                        </li>
+                        <li>
+                            PlayFabGML has a request scripts for all ~200 <a href="https://api.playfab.com/documentation/client">Client API Calls</a> found from official documentation.
+                        </li>
+                        <li>
+                            In this case our request name is "LoginWithCustomId" and PlayFabGML has corresponding request script with name "pfLoginWithCustomID()"
+                        </li>
+                        <li>
+                            Let's add third line to our Create event:
+                            <p class="panel_default">pfLoginWithCustomID();</p>
+                        </li>
+                        <li>
+                            After we have written the function name we can see expected arguments at the bottom of the code editor:
+                            <p class="panel_default">
+                            pfLoginWithCustomID(
+                            &emsp;[R|Script]OnComplete,
+                            &emsp;[R|Script]OnError,
+                            &emsp;[R|String]TitleId,
+                            &emsp;[O|Boolean]CreateAccount,
+                            &emsp;[O|String]CustomId,
+                            &emsp;[O|String]EncryptedRequest,
+                            &emsp;[O|Map]InfoRequestParameters,
+                            &emsp;[O|Boolean]LoginTitlePlayerAccountEntity,
+                            &emsp;[O|String]PlayerSecret
+                            );</p>
+                        </li>
+                        <li>We can also open the script and see a more detailed description for the request:<br>
+                            <img src="images/login_request.png">
+                        </li>
+
+                        <li>
+                            Looks scary doesn't it? Don't worry, it's not that bad. Let's look at the first argument:
+                            <p class="panel_default">[R|Script]onComplete</p>
+                            <ul>
+                                <li><span class="argtype">"R"</span> in argument stands for "Required", meaning that our request fails without it.</li>
+                                <li><span class="argtype">"Script"</span> means that the argument type is a script</li>
+                                <li><span class="arg">onComplete</span> is a callback script which is called when we get a successful response from the server, the received response map as an argument.</li>
+                            </ul>
+
+                        <li><p class="panel_default">[R|Script]onError</pi>
+                            <ul><li>A callback script which is called if/when our request fails.</li></ul>
+                        </li>
+                        <br>
+                        <li>Create two empty callback scripts "loginOnComplete", and "loginOnError"</li>
+                        <li>Now our request should look like:<br>
+                        <p class="panel_default">pfLoginWithCustomID(loginOnComplete, loginOnError);</p></li>
+
+                        <li>
+                            The  third argument is [R|String]TitleId. We can get our TitleId by calling "pf_get_title_id()"<br>
+                            <p class="panel_default">pfLoginWithCustomID(
+                            &emsp;loginOnComplete, loginOnError,
+                            &emsp;pf_get_title_id()
+                            );</p>
+                        </li>
+
+                        <li>
+                            Fourth argument is [O|Boolean]CreateAccount which defines whether or not we want to create a new account if none exists. Let's set it to true.
+                            <ul>
+                                <li>Did you notice that this arguments had "O" which means it is optional? We have already included all required arguments</li>
+                            </ul>
+                        </li>
+
+                        <li>
+                            Fifth argument is "[O|String]CustomId" which is our user id. Let's set it to "pf_get_installation_id()"<br>
+                        </li>
+
+                        <li>
+                            Now our code should look like this:
+                            <p class="panel_default code_linebreaks">// Create-event
+                              pf_init("YOUR_TITLE_ID");
+                              instance_create_depth(0,0,0, obj_playfab_terminal);
+
+                              pfLoginWithCustomID(
+                              &emsp;loginOnComplete, loginOnError,
+                              &emsp;pf_get_title_id(),
+                              &emsp;pf_get_installation_id()
+                              );
+                            </p>
+                        </li>
+
+                        <li>
+                            Let's run our project and press "Ctrl+Shift+S" to show terminal:
+                            <img src="images/login_response.png" class="img_big">
+                        </li>
+                        <li>
+                            If everything went well we should have three fields visible:
+                            <ul>
+                                <li>
+                                    <mark class="code">REQUEST</mark>: the request we sent in <a href="https://youtu.be/wI1CWzNtE-M?t=43">JSON format</a>  (text representation of Map data structure)
+                                </li>
+                                <li>
+                                    <mark class="code">RESPONSE</mark>: the response we got from PlayFab backend in JSON format. (By default this only shows the part of the response which is returned to "onComplete"/"onError" callback script, if you want to see headers and HTTP codes you can modify settings in "pf_terminal_init()" )
+                                </li>
+                                <li>
+                                    <mark class="code">CALLBACK</mark>: which callback script was called
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            You can also see that our values have changed at the top:
+                            <ul>
+                                <li>Authenticated should now be true meaning we are logged in and ready to use other requests which require authenticated user</li>
+                                <li>Player ID should now have our user id</li>
+                            </ul>
+
+                        </li>
+
+                        <li>
+                            Hurray! We are now logged in and ready to do more interesting stuff!
+                        </li>
+                        <!--<li>
+Or just look up the <a href="https://api.playfab.com/documentation/client/method/LoginWithCustomID">official documentation</a>
+</li>-->
+                    </ul>
+
+                    <h2>Cloud Saving</h2>
+                    <ul>
+                        <li>
+                            The following code can be written in any object, but you should make sure it is persistent if receiving the data is crucial (if the instance which called the request is destroyed, the callback fails silently on background).
+                        </li>
+                        <li>
+                            Like almost everything in PlayFab, uploading to backend happens in key-value pairs. Let's start by making a map for player data:<br>
+                            <p class="panel_default code_linebreaks">// Create-event
+                            player_data = ds_map_create();<br>
+                            ds_map_set(player_data, "Health", 77);
+                            ds_map_set(player_data, "XP", 440);
+                            ds_map_set(player_data, "Name", "DragonSlayer666");
+                            ds_map_set(player_data, "Race", "Human");</p>
+                        </li>
+                        <!--<li>
+                            Before we call the request for Cloud Saving with we have to make sure we have properly logged in<wbr>/authenticated. To make this easier PlayfabGML has function called <mark class="code">pf_event_perform_when_authenticated(user_event)</mark> which performs an user event defined in the first argument (in the scope of current instance) if/when the client has been authenticated.
+                        </li>
+                        <li>
+                            Let's add this to Create-event:
+                            <p class="panel_default">pf_event_perform_when_authenticated(ev_user0);</p>
+                            <ul>
+                                <li>Now we can add event "User Event 0" and continue coding inside it runs when we are authenticated.</li>
+                            </ul>
+                        </li>-->
+                        <li>User data can be sent by using <a href="https://api.playfab.com/documentation/admin/method/UpdateUserData">UpdateUserData</a> request:<br>
+                          <p class="panel_default">pfUpdateUserData(
+                              &emsp;[R|Script]OnComplete,
+                              &emsp;[R|Script]OnError,
+                              &emsp;[O|Map]Data,
+                              &emsp;[O|List]KeysToRemove,
+                              &emsp;[O|String]Permission
+                              );</p>
+                        </li>
+                        <li>
+                            The request takes two callback scripts (your can use empty ones for now) and data map (in which we wrap our player_data map as a JSON string with <mark class="code">json_encode()</mark> ). We don't want to remove keys or update permissions so we can forget the last two arguments:
+                            <p class="panel_default">
+                                var data = ds_map_create();
+                                ds_map_set(data, "player_data", json_encode(player_data));
+
+                                pfUpdateUserData(updateUserDataOnComplete, updateUserDataOnError, data);
+                            </p>
+                            <ul>
+                                <li>Lists and maps given as arguments are automatically cleared from memory after the request has completed so don't worry about destroying the data map. (And always use <mark class="code">map_copy()</mark> if you give an important map as an argument).</li>
+                            </ul>
+                        </li>
+                        <li>
+                            We want our request to happen only in certain situation (keyboard_check_pressed() for this example) and when we are authenticated:
+                            <p class="panel_default">
+                                // Step-event
+                                if keyboard_check_pressed(ord("U")) and pf_is_authenticated() {
+                                &emsp;var data = ds_map_create();
+                                &emsp;ds_map_set(data, "player_data", json_encode(player_data));
+
+                                &emsp;pfUpdateUserData(updateUserDataOnComplete, updateUserDataOnError, data);
+                                }
+                            </p>
+                        </li>
+                        <li>
+                            If everything went fine we should see this after pressing "U" and opening terminal:
+                            <img src="images\updateuserdata.png" style="max-width: 600px;">
+                            <ul><li>You can scroll the terminal vertically by pressing Shift and scrolling with mouse</li></ul>
+                            <br>
+                        </li>
+                        <li>
+                            We can make sure the data is uploaded correctly by going to <a href="https://developer.playfab.com/">PlayFab Game Manager</a> --> Choose TitleId --> Players tab --> Latest logged in player --> Player Data (Title)
+                            <img src="images/userdata.png" style="max-width: 700px">
+                        </li>
+                        <li>
+                            You can also upload nested maps and lists for more complex systems!
+                        </li>
+                    </ul>
+                    <h2>Loading saves</h2>
+                    <ul>
+                        <li>Loading user data happens with <a href="https://api.playfab.com/documentation/client/method/GetUserData">GetUserData</a> request with following arguments:
+                            <p class="panel_default">
+                                pfGetUserData(
+                                &emsp;[R|Script]OnComplete,
+                                &emsp;[R|Script]OnError,
+                                &emsp;[O|uint32]IfChangedFromDataVersion,
+                                &emsp;[O|List]Keys,
+                                &emsp;[O|String]PlayFabId
+                                );
+                            </p>
+                        </li>
+                        <li>All request arguments expect callback functions are optional so this one should be easy (once again, leave callback functions empty for now):
+                            <p class="panel_default">
+                                // Step-event
+                                if keyboard_check_pressed(ord("L")) and pf_is_authenticated() {
+                                &emsp;pfGetUserData(getUserDataOnComplete, getUserDataOnError);
+                                }
+                            </p>
+                        </li>
+                        <li>
+                            After pressing "L" we should get a following response
+                            <img src="images/userdata_response.png" style="max-width: 600px">
+                            <ul><li>(You can scroll horizontally with Shift + mouse scroll to see the whole response)</li></ul>
+
+                        </li>
+                        <li>
+                            Great, we received our player_data but how can we actually use it and copy it to our player_data map? So far we have been only creating empty callback scripts but now is the time to write some code there. Open your getUserDataOnComplete():
+                            <p class="panel_default">
+                            var _body = argument0;
+                            var _player_data = map_nested_get(_body, "Data", "player_data", "Value");
+
+                            if is_string(_player_data) and (_player_data != "") {
+                            &emsp;_player_data = json_decode(_player_data);
+                            &emsp;if ds_exists(_player_data, ds_type_map) {
+                            &emsp;&emsp;player_data = map_copy(_player_data);
+                            &emsp;&emsp;player_data_loaded = true;
+                            &emsp;&emsp;//show_message("Player data loaded: \n"+json_encode(_player_data));
+                            &emsp;&emsp;exit;
+                            &emsp;}
+                            }
+
+                            //show_message("Player data not found from backend :/");
+                            </p>
+                            <ul>
+                                <li>Callback functions get called with response body as the first argument</li>
+                                <li>PlayfabGML has function <mark class="code">map_nested_get()</mark> which makes accessing nested data structures a lot easier (works with lists too, just use index value instead of key name)</li>
+                                <li>Tries to parse the player_data json string from the response body and decodes it in into a map.</li>
+                                <li>Response body (and all its nested data structures) are destroyed automatically after callback script is executed so no need to stress about deleting it (this is why we use <mark class="code">map_copy()</mark> before saving it to player_data</li>
+                                <li>"player_data_loaded" is set to true, with it you can test whether or not player_data has been loaded from server (remember to set it to false in create event)</li>
+                            </ul>
+                        </li>
+
+                    </ul>
+
+                    <h3>Getting TitleData</h2>
+                    <ul>
+                        <li>
+                            In GameManager --> Content --> TitleData you can defined general key value pairs for the game title every user can load. This is helpful place to keep data like game translations, oldest valid game version for leaderboards, data for events like daily challenges etc
+                        </li>
+                        <li>
+                        In many cases like this you want to perform some requests as soon as the game client is authenticated. One could handle the situtation like this:
+                            <p class="panel_default">
+                            // Create:
+                            authenticated = false;
+
+                            // Step:
+                            if (!authenticated and pf_is_authenticated()) {
+                            &emsp;getTitleData(titleDataOnComplete, titleDataOnError)
+                            &emsp;authenticated = true;
+                            }
+                            </p>
+                        </li>
+                        <li>
+                        PlayFabGML has slightly easier way to handle this:
+                            <p class="panel_default">
+                            // Create:
+                            pf_event_perform_when_authenticated(ev_user0);
+
+                            // User Event 0:
+                            pfGetTitleData(getTitleDataOnComplete, getTitleDataOnError);
+                            </p>
+                            <ul>
+                                <li><mark class="code">pf_event_perform_when_authenticated(user_event)</mark> performs an user event defined by the argument when the client has successfully authenticated with any of the login methods.</li>
+                            </ul>
+                        </li>
+                        <li>We could even define which exact key-value pairs we want. pfGetTitleData takes third argument <mark class="code">[O|List]Keys</mark> which is a list of all key-value pairs we want to load. We could use code:</li>
+                        <p class="panel_default">
+                        var keys = ds_list_create();
+                        ds_list_add(keys, "LatestVersion", "OldestValid");
+
+                        pfGetTitleData(getTitleDataOnComplete, getTitleDataOnError, keys);
+                        </p>
+                        <li>
+                        To make things easier PlayfabGML accepts JSON strings as arguments if argument type is list or map.
+                            <p class="panel_default">
+                            pfGetTitleData(getTitleDataOnComplete, getTitleDataOnError, @'["LatestVersion", "OldestValid"]');
+                            </p>
+                            <ul>
+                                <li>
+                                    To avoid having to use escape characters with quotes in json string we used <a href="https://docs2.yoyogames.com/source/_build/3_scripting/4_gml_reference/strings/index.html">@ string literal identifier</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            Our resonse should look like this:<br>
+                            <img src="images/titledata_response.png" style="max-width: 250px">
+                        </li>
+                        <li>
+                            And once again we could access the data by modifying the getTitleDataOnComplete callback script (for example):
+                            <p class="panel_default">
+                            var _body = argument0;
+
+                            var _oldest_valid = map_nested_get(_body,  "Data", "OldesValid");
+                            &emsp;_oldest_valid = real(_oldest_valid);
+
+                            if (_oldest_valid < global.game_version) {
+                            &emsp;show_message("Update to newer game version to keep using leaderboards.");
+                            &emsp;global.can_use_leaderboards = false;
+                            }
+                            </p>
+                        </li>
+                    </ul>
+
+
+
+
+                    <br><br><br><br><br><br><br>
+
+                </div>
+            </div>
+        </div>
+
+    </body>
+</html>
+
+<!--
+   <mark>
+                                <p>var player_data = ds_map_create();<br>
+                                    ds_map_set(player_data, "Health", 77);<br>
+                                    ds_map_set(player_data, "XP", 440);<br>
+                                    ds_map_set(player_data, "Name", "DragonSlayer666");<br>
+                                    ds_map_set(player_data, "Race", "Human");<br>
+                                </p>
+                            </mark>
+-->
